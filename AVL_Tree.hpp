@@ -1,20 +1,13 @@
 #pragma once
 
-#include "libs.hpp"
-
-#include "AVL_Tree.hpp"
-
-
 class AVL_Tree {
 
-private:
+protected:
     struct Node {
 
         int key = 0;
-        bool is_init = false;
         int height = 0;
 
-        Node* parent = nullptr;
         Node* left = nullptr;
         Node* right = nullptr;
 
@@ -23,58 +16,41 @@ private:
     Node* head = nullptr;
     unsigned int tree_size = 0;
 
+    void __initNode(Node* current_node, int key);
+    bool __isInit(Node* current_node) const;
+
     void __destroyTree(Node* current_node);
-    bool __find(int key, Node* current_node) const;
 
-    void leftLeftRotation(Node* current_node); // Small left rotation
-    void rightRightRotation(Node* current_node); // Small right rotation
+    void __smallLeftRotation(Node* current_node, Node* last_node); // Left left node rotation
+    void __smallRightRotation(Node* current_node, Node* last_node); // Right right node rotation
 
-    void leftRightRotation(Node* current_node); // Big left rotation
-    void rightLeftRotation(Node* current_node); // Big right rotation
+    void __bigLeftRotation(Node* current_node, Node* last_node); // Left right node rotation
+    void __bigRightRotation(Node* current_node, Node* last_node); // Right left node rotation
 
-    void __insert(int key, Node* current_node);
+    void __insert(int key, Node* current_node, Node* last_node);
 
-    void __getAllElements(std::vector<int>& result, Node* current_node) const;
+    void __getAllElements(int* result, int& i, Node* current_node) const;
 
-    int __lower_bound(int key, Node* current_node) const;
+    Node* __find(int key) const;
+    Node* __lower_bound(int key) const;
 
 public:
-    AVL_Tree() {
-        head = new Node;
-    }
+
+    AVL_Tree();
     AVL_Tree(const AVL_Tree& T) = delete;
-    ~AVL_Tree() {
-        __destroyTree(head);
-    }
+    ~AVL_Tree();
+
     AVL_Tree& operator=(const AVL_Tree& T) = delete;
 
-    bool find(int key) {
-        return __find(key, head);
-    }
+    bool isExists(int key) const;
 
-    void insert(int key) { // Adds an element to the tree, if it is already there, then nothing will happen
-        __insert(key, head);
-    }
+    void insert(int key); // Adds an element to the tree, if it is already there, then nothing will happen
 
-    int lower_bound(int key) { // Returns V >= key or key - 1 if there is no suitable value
-        return __lower_bound(key, head);
-    }
+    int lower_bound(int key) const; // Returns V >= key or key - 1 if there is no suitable value
+    int upper_bound(int key) const; // Returns V > key or key - 1 if there is no suitable value
 
-    int upper_bound(int key) { // Returns V > key or key - 1 if there is no suitable value
-        return __lower_bound(key + 1, head);
-    }
+    unsigned int size() const;
+    bool empty() const;
 
-    unsigned int size() {
-        return tree_size;
-    }
-
-    bool empty() {
-        return tree_size == 0;
-    }
-
-    std::vector<int> getAllElements() {
-        std::vector<int> result(0);
-        __getAllElements(result, head);
-        return result;
-    }
+    int* getAllElements(); // Returns an allocated array with all elements in sorted order
 };
